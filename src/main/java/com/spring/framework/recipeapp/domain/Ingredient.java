@@ -1,61 +1,40 @@
 package com.spring.framework.recipeapp.domain;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
+@Data
 @Entity
+@EqualsAndHashCode(exclude = {"recipe"})
+@RequiredArgsConstructor
 public class Ingredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private String description;
+
+    @NotNull
     private BigDecimal amount;
 
     @ManyToOne
     private Recipe recipe;
 
+    @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     private UnitOfMeasure unitOfMeasure;
 
-    public Ingredient(){}
-
-    public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom) {
-        this.amount = amount;
+    public Ingredient(String description, BigDecimal amount, UnitOfMeasure unitOfMeasure) {
         this.description = description;
-        this.unitOfMeasure = uom;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
         this.amount = amount;
-    }
-
-    public Recipe getRecipe() {
-        return recipe;
-    }
-
-    public void setRecipe(Recipe recipe) {
-        this.recipe = recipe;
+        this.unitOfMeasure = unitOfMeasure;
     }
 }
+
