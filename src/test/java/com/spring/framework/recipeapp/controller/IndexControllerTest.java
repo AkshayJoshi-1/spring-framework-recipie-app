@@ -1,0 +1,77 @@
+package com.spring.framework.recipeapp.controller;
+
+import com.spring.framework.recipeapp.domain.Recipe;
+import com.spring.framework.recipeapp.service.RecipeService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.ui.Model;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+class IndexControllerTest {
+
+    @Mock
+    private Model model;
+
+    @Mock
+    private RecipeService recipeService;
+
+    private IndexController indexController;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
+        indexController = new IndexController();
+        indexController.setRecipeService(recipeService);
+    }
+
+    @Test
+    void getIndexPage() {
+
+        Set<Recipe> recipes = new HashSet<>();
+
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        recipes.add(recipe);
+
+        recipe = new Recipe();
+        recipe.setId(2L);
+        recipes.add(recipe);
+
+        Mockito.when(recipeService.getAllRecipes()).thenReturn(recipes);
+
+        ArgumentCaptor<Set<Recipe>> argumentCaptor = ArgumentCaptor.forClass(Set.class);
+
+        String result = indexController.getIndexPage(model);
+
+        assertEquals("index", result);
+        Mockito.verify(model, Mockito.times(1)).addAttribute(Mockito.eq("recipes"), argumentCaptor.capture());
+        Mockito.verify(recipeService, Mockito.times(1)).getAllRecipes();
+
+        Set<Recipe> setInController = argumentCaptor.getValue();
+
+        assertEquals(2, setInController.size());
+    }
+
+    @Test
+    void testMockMVC() throws Exception {
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(indexController).build();
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"));
+    }
+}
