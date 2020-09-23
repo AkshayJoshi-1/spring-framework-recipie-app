@@ -16,6 +16,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -58,8 +61,8 @@ class IndexControllerTest {
         String result = indexController.getIndexPage(model);
 
         assertEquals("index", result);
-        Mockito.verify(model, Mockito.times(1)).addAttribute(Mockito.eq("recipes"), argumentCaptor.capture());
-        Mockito.verify(recipeService, Mockito.times(1)).getAllRecipes();
+        verify(model, times(1)).addAttribute(eq("recipes"), argumentCaptor.capture());
+        verify(recipeService, times(1)).getAllRecipes();
 
         Set<Recipe> setInController = argumentCaptor.getValue();
 

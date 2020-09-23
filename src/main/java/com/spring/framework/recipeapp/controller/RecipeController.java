@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @Slf4j
-public class IndexController {
+public class RecipeController {
 
     private RecipeService recipeService;
 
@@ -18,11 +19,13 @@ public class IndexController {
         this.recipeService = recipeService;
     }
 
-    @RequestMapping({"", "/", "/index"})
-    public String getIndexPage(Model model){
-        log.debug("Getting index page");
+    @RequestMapping("/recipe/show/{id}")
+    public String getRecipeById(@PathVariable String id, Model model) {
 
-        model.addAttribute("recipes", recipeService.getAllRecipes());
-        return "index";
+        log.info("Retrieving recipe with id: " + id);
+        model.addAttribute("recipe",
+                            recipeService.findById(Long.valueOf(id)));
+
+        return "recipe/show";
     }
 }
