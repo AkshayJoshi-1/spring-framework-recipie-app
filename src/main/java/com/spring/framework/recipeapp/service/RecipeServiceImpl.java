@@ -1,10 +1,14 @@
 package com.spring.framework.recipeapp.service;
 
+import com.spring.framework.recipeapp.command.RecipeCommand;
+import com.spring.framework.recipeapp.converter.RecipeCommandToRecipe;
+import com.spring.framework.recipeapp.converter.RecipeToRecipeCommand;
 import com.spring.framework.recipeapp.domain.Recipe;
 import com.spring.framework.recipeapp.repository.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,9 +18,15 @@ import java.util.Set;
 public class RecipeServiceImpl implements RecipeService{
 
     private final RecipeRepository recipeRepository;
+    private final RecipeCommandToRecipe recipeCommandToRecipe;
+    private final RecipeToRecipeCommand recipeToRecipeCommand;
 
-    public RecipeServiceImpl(@Autowired RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(@Autowired RecipeRepository recipeRepository,
+                             @Autowired RecipeCommandToRecipe recipeCommandToRecipe,
+                             @Autowired RecipeToRecipeCommand recipeToRecipeCommand) {
         this.recipeRepository = recipeRepository;
+        this.recipeCommandToRecipe = recipeCommandToRecipe;
+        this.recipeToRecipeCommand = recipeToRecipeCommand;
     }
 
     @Override
@@ -31,5 +41,15 @@ public class RecipeServiceImpl implements RecipeService{
     @Override
     public Recipe findById(Long id) {
         return recipeRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+        Recipe detachedRecipe = recipeCommandToRecipe.convert(command);
+
+        Recipe savedRecipe = recipeRepository.save(detachedRecipe);
+        log.debug("Saved RecipeId:" + savedRecipe.getId());
+        return recipeToRecipeCommand.convert(savedRecipe);
     }
 }
