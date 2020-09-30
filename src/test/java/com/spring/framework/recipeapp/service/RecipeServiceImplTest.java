@@ -4,6 +4,7 @@ import com.spring.framework.recipeapp.converter.RecipeCommandToRecipe;
 import com.spring.framework.recipeapp.converter.RecipeToRecipeCommand;
 import com.spring.framework.recipeapp.domain.Recipe;
 import com.spring.framework.recipeapp.repository.RecipeRepository;
+import com.spring.framework.recipeapp.service.impl.RecipeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
