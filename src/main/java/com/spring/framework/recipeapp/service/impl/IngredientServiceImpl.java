@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -77,7 +79,8 @@ public class IngredientServiceImpl implements IngredientService {
                                                     .findFirst();
 
         if(ingredientOptional.isEmpty()) {
-            recipe.addIngredient(ingredientCommandToIngredient.convert(command));
+            return saveNewIngredient(command, recipe);
+
         } else {
             Ingredient ingredientFound = ingredientOptional.get();
             ingredientFound.setDescription(command.getDescription());
@@ -93,5 +96,22 @@ public class IngredientServiceImpl implements IngredientService {
                                                                     .stream()
                                                                     .filter(ingredient -> ingredient.getId().equals(command.getId()))
                                                                     .findFirst().orElse(null));
+    }
+
+    private IngredientCommand saveNewIngredient(IngredientCommand command, Recipe recipe) {
+
+        Set<Long> currentIngredients = recipe.getIngredients().stream()
+                                                .map(Ingredient::getId)
+                                                .collect(Collectors.toSet());
+
+        Ingredient ingredient = ingredientCommandToIngredient.convert(command);
+        recipe.addIngredient(ingredient);
+        Recipe savedRecipe = recipeRepository.save(recipe);
+
+        Optional<Ingredient> ingredientOptional = savedRecipe.getIngredients().stream()
+                                                                .filter(ingredient1 -> !currentIngredients.contains(ingredient1.getId()))
+                                                                .findFirst();
+
+        return ingredientToIngredientCommand.convert(ingredientOptional.orElse(null));
     }
 }
