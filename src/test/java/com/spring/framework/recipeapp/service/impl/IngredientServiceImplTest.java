@@ -1,11 +1,14 @@
 package com.spring.framework.recipeapp.service.impl;
 
 import com.spring.framework.recipeapp.command.IngredientCommand;
+import com.spring.framework.recipeapp.converter.IngredientCommandToIngredient;
 import com.spring.framework.recipeapp.converter.IngredientToIngredientCommand;
+import com.spring.framework.recipeapp.converter.UnitOfMeasureCommandToUnitOfMeasure;
 import com.spring.framework.recipeapp.converter.UnitOfMeasureToUnitOfMeasureCommand;
 import com.spring.framework.recipeapp.domain.Ingredient;
 import com.spring.framework.recipeapp.domain.Recipe;
 import com.spring.framework.recipeapp.repository.RecipeRepository;
+import com.spring.framework.recipeapp.repository.UnitOfMeasureRepository;
 import com.spring.framework.recipeapp.service.IngredientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,20 +25,27 @@ public class IngredientServiceImplTest {
 
     IngredientToIngredientCommand ingredientToIngredientCommand;
 
+    IngredientCommandToIngredient ingredientCommandToIngredient;
+
     @Mock
     RecipeRepository recipeRepository;
+
+    @Mock
+    UnitOfMeasureRepository unitOfMeasureRepository;
 
     IngredientService ingredientService;
 
     //init converters
     public IngredientServiceImplTest() {
         this.ingredientToIngredientCommand = new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand());
+        this.ingredientCommandToIngredient = new IngredientCommandToIngredient(new UnitOfMeasureCommandToUnitOfMeasure());
     }
 
     @BeforeEach
     public void setUp() throws Exception {
+
         MockitoAnnotations.initMocks(this);
-        ingredientService = new IngredientServiceImpl(recipeRepository,     ingredientToIngredientCommand);
+        ingredientService = new IngredientServiceImpl(recipeRepository,     ingredientToIngredientCommand, ingredientCommandToIngredient, unitOfMeasureRepository);
     }
 
     @Test
