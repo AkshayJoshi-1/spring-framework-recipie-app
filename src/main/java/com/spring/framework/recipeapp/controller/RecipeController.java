@@ -1,12 +1,15 @@
 package com.spring.framework.recipeapp.controller;
 
 import com.spring.framework.recipeapp.command.RecipeCommand;
+import com.spring.framework.recipeapp.exception.NotFoundException;
 import com.spring.framework.recipeapp.service.RecipeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @Slf4j
@@ -59,5 +62,27 @@ public class RecipeController {
         recipeService.deleteById(Long.valueOf(id));
 
         return "redirect:/";
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ModelAndView handleNotFoundException(Exception exception){
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("404ErrorPage");
+        mv.addObject("exception", exception);
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NumberFormatException.class)
+    public ModelAndView handleNUmberFormatException(Exception exception){
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("badRequest");
+        mv.addObject("exception", exception);
+
+        return mv;
     }
 }
