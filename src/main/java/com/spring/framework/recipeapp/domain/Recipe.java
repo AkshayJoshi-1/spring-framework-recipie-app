@@ -1,13 +1,18 @@
 package com.spring.framework.recipeapp.domain;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Document
 public class Recipe {
 
+    @Id
     private String id;
 
     private String description;
@@ -27,22 +32,17 @@ public class Recipe {
 
     private Notes notes;
 
+    @DBRef
     private Set<Category> categories = new HashSet<>();
 
 
     public void setNotes(Notes notes) {
-        this.notes = notes;
-
         if(notes != null) {
-            notes.setRecipe(this);
+            this.notes = notes;
         }
     }
 
     public void addIngredient(Ingredient ingredient) {
         this.ingredients.add(ingredient);
-
-        if(ingredient != null) {
-            ingredient.setRecipe(this);
-        }
     }
 }

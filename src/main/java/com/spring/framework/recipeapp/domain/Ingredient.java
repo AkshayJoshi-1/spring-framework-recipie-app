@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class Ingredient {
 
+    @Id
     private String id;
 
     @NotNull
@@ -25,6 +28,7 @@ public class Ingredient {
     private Recipe recipe;
 
     @NotNull
+    @DBRef
     private UnitOfMeasure unitOfMeasure;
 
     public Ingredient(String description, BigDecimal amount, UnitOfMeasure unitOfMeasure) {
