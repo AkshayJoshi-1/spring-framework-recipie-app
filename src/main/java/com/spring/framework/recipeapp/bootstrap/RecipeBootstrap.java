@@ -44,6 +44,34 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
         List<Recipe> recipes = new ArrayList<>(2);
 
+        List<UnitOfMeasure> uoms = new ArrayList<>();
+
+        UnitOfMeasure uom = new UnitOfMeasure();
+        uom.setDescription("Each");
+        uoms.add(uom);
+
+        uom = new UnitOfMeasure();
+        uom.setDescription("Tablespoon");
+        uoms.add(uom);
+
+        uom = new UnitOfMeasure();
+        uom.setDescription("Teaspoon");
+        uoms.add(uom);
+
+        uom = new UnitOfMeasure();
+        uom.setDescription("Dash");
+        uoms.add(uom);
+
+        uom = new UnitOfMeasure();
+        uom.setDescription("Pint");
+        uoms.add(uom);
+
+        uom = new UnitOfMeasure();
+        uom.setDescription("Cup");
+        uoms.add(uom);
+
+        unitOfMeasureRepository.saveAll(uoms);
+
         //get UOMs
         Optional<UnitOfMeasure> eachUomOptional = unitOfMeasureRepository.findByDescription("Each");
 
@@ -89,6 +117,17 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         UnitOfMeasure pintUom = dashUomOptional.get();
         UnitOfMeasure cupsUom = cupsUomOptional.get();
 
+        List<Category> categories = new ArrayList<>();
+
+        Category category = new Category();
+        category.setDescription("American");
+        categories.add(category);
+
+        category = new Category();
+        category.setDescription("Mexican");
+        categories.add(category);
+
+        categoryRepository.saveAll(categories);
         //get Categories
         Optional<Category> americanCategoryOptional = categoryRepository.findByDescription("American");
 

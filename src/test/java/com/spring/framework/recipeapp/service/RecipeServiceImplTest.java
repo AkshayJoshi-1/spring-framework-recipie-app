@@ -54,27 +54,27 @@ public class RecipeServiceImplTest {
     @Test
     void findByIdFound() {
         Recipe recipe = new Recipe();
-        recipe.setId(10L);
+        recipe.setId("10");
 
-        when(recipeRepository.findById(10L)).thenReturn(Optional.of(recipe));
+        when(recipeRepository.findById("10")).thenReturn(Optional.of(recipe));
 
-        Recipe retrievedRecipe = recipeRepository.findById(10L).orElse(null);
+        Recipe retrievedRecipe = recipeRepository.findById("10").orElse(null);
 
         assertNotNull(retrievedRecipe);
-        verify(recipeRepository, times(1)).findById(10L);
+        verify(recipeRepository, times(1)).findById("10");
     }
 
     @Test
     void findByIdNotFound() {
         Recipe recipe = new Recipe();
-        recipe.setId(10L);
+        recipe.setId("10");
 
-        when(recipeRepository.findById(10L)).thenReturn(Optional.of(recipe));
+        when(recipeRepository.findById("10")).thenReturn(Optional.of(recipe));
 
-        Recipe retrievedRecipe = recipeRepository.findById(1L).orElse(null);
+        Recipe retrievedRecipe = recipeRepository.findById("1").orElse(null);
 
         assertNull(retrievedRecipe);
-        verify(recipeRepository, times(1)).findById(1L);
+        verify(recipeRepository, times(1)).findById("1");
     }
 
 }

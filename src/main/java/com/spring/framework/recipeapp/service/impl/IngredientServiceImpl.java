@@ -39,7 +39,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public IngredientCommand findByRecipeIdAndIngredientId(Long recipeId, Long ingredientId) {
+    public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
 
@@ -99,7 +99,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public void deleteByRecipeIdAndIngredientId(Long recipeId, Long ingredientId) {
+    public void deleteByRecipeIdAndIngredientId(String recipeId, Long ingredientId) {
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
 
@@ -127,7 +127,7 @@ public class IngredientServiceImpl implements IngredientService {
 
     private IngredientCommand saveNewIngredient(IngredientCommand command, Recipe recipe) {
 
-        Set<Long> currentIngredients = recipe.getIngredients().stream()
+        Set<String> currentIngredients = recipe.getIngredients().stream()
                                                 .map(Ingredient::getId)
                                                 .collect(Collectors.toSet());
 
