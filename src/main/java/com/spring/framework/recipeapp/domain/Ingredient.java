@@ -4,11 +4,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(exclude = {"recipe"})
@@ -16,8 +16,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class Ingredient {
 
-    @Id
-    private String id;
+    private String id = UUID.randomUUID().toString();
 
     @NotNull
     private String description;

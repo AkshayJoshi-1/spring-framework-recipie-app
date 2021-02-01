@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,25 +42,24 @@ public class IngredientServiceImpl implements IngredientService {
     @Override
     public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
+
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
-
-        if(recipeOptional.isEmpty()) {
-            log.error("Recipe with id " + recipeId + " does not exist.");
-            return null;
+        if (recipeOptional.isEmpty()){
+            log.error("recipe id not found. Id: " + recipeId);
         }
-
         Recipe recipe = recipeOptional.get();
-
-        Optional<Ingredient> ingredientOptional = recipe.getIngredients().stream()
-                                                                    .filter(ingredient -> ingredient.getId().equals(ingredientId))
-                                                                    .findFirst();
-
-        if(ingredientOptional.isEmpty()) {
-            log.error("Ingredient with id " + ingredientId + " does not exist for recipe with id " + recipeId);
-            return null;
+        Optional<IngredientCommand> ingredientCommandOptional = recipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getId().equals(ingredientId))
+                .map(ingredientToIngredientCommand::convert).findFirst();
+        if(ingredientCommandOptional.isEmpty()){
+            log.error("Ingredient id not found: " + ingredientId);
         }
 
-        return ingredientToIngredientCommand.convert(ingredientOptional.get());
+        //enhance command object with recipe id
+        IngredientCommand ingredientCommand = ingredientCommandOptional.get();
+        ingredientCommand.setRecipeId(recipe.getId());
+
+        return ingredientCommandOptional.get();
     }
 
     @Override
@@ -92,10 +92,12 @@ public class IngredientServiceImpl implements IngredientService {
 
         Recipe savedRecipe = recipeRepository.save(recipe);
 
-        return ingredientToIngredientCommand.convert(savedRecipe.getIngredients()
-                                                                    .stream()
-                                                                    .filter(ingredient -> ingredient.getId().equals(command.getId()))
-                                                                    .findFirst().orElse(null));
+        Utils.fillIngredientRecipes(savedRecipe);
+
+        return ingredientToIngredientCommand.convert(Objects.requireNonNull(savedRecipe.getIngredients()
+                .stream()
+                .filter(ingredient -> ingredient.getId().equals(command.getId()))
+                .findFirst().orElse(null)));
     }
 
     @Override
@@ -110,19 +112,9 @@ public class IngredientServiceImpl implements IngredientService {
         Recipe recipe = recipeOptional.get();
 
         Optional<Ingredient> ingredientOptional = recipe.getIngredients().stream()
-                                                            .filter(ingredient -> ingredient.getId().equals(ingredientId))
+                                                            .filter(ingredient -> false)
                                                             .findFirst();
 
-        if(ingredientOptional.isEmpty()) {
-            return;
-        }
-
-        Ingredient ingredientToDelete = ingredientOptional.get();
-
-        recipe.getIngredients().remove(ingredientToDelete);
-        ingredientToDelete.setRecipe(null);
-
-        Recipe savedRecipe = recipeRepository.save(recipe);
     }
 
     private IngredientCommand saveNewIngredient(IngredientCommand command, Recipe recipe) {

@@ -3,6 +3,7 @@ package com.spring.framework.recipeapp.service.impl;
 import com.spring.framework.recipeapp.command.RecipeCommand;
 import com.spring.framework.recipeapp.converter.RecipeCommandToRecipe;
 import com.spring.framework.recipeapp.converter.RecipeToRecipeCommand;
+import com.spring.framework.recipeapp.domain.Ingredient;
 import com.spring.framework.recipeapp.domain.Recipe;
 import com.spring.framework.recipeapp.exception.NotFoundException;
 import com.spring.framework.recipeapp.repository.RecipeRepository;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import static com.spring.framework.recipeapp.service.impl.Utils.fillIngredientRecipes;
 
 @Service
 @Slf4j
@@ -38,6 +41,11 @@ public class RecipeServiceImpl implements RecipeService {
         log.info("Getting all recipe");
         Set<Recipe> recipes = new HashSet<>();
         recipeRepository.findAll().iterator().forEachRemaining(recipes::add);
+
+        for (Recipe recipe : recipes) {
+            fillIngredientRecipes(recipe);
+        }
+
         return recipes;
     }
 
@@ -45,12 +53,17 @@ public class RecipeServiceImpl implements RecipeService {
     public Recipe findById(String id) {
         Optional<Recipe> recipeOption = recipeRepository.findById(id);
 
-        if(recipeOption.isEmpty()) {
+
+        if (recipeOption.isEmpty()) {
             throw new NotFoundException("Unable to find recipe with ID: " + id);
         }
 
+        fillIngredientRecipes(recipeOption.get());
+
         return recipeOption.get();
     }
+
+
 
     @Override
     @Transactional
@@ -70,7 +83,16 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     @Transactional
     public RecipeCommand findCommandById(String id) {
-        return recipeToRecipeCommand.convert(recipeRepository.findById(id).orElse(null));
+        RecipeCommand recipeCommand = recipeToRecipeCommand.convert(findById(id));
+
+        //enhance command object with id value
+        if(recipeCommand.getIngredients() != null && recipeCommand.getIngredients().size() > 0){
+            recipeCommand.getIngredients().forEach(rc -> {
+                rc.setRecipeId(recipeCommand.getId());
+            });
+        }
+
+        return recipeCommand;
     }
 
     @Override
