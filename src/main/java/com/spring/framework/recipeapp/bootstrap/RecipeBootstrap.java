@@ -5,7 +5,11 @@ import com.spring.framework.recipeapp.domain.*;
 import com.spring.framework.recipeapp.repository.CategoryRepository;
 import com.spring.framework.recipeapp.repository.RecipeRepository;
 import com.spring.framework.recipeapp.repository.UnitOfMeasureRepository;
+import com.spring.framework.recipeapp.repository.reactive.CategoryReactiveRepository;
+import com.spring.framework.recipeapp.repository.reactive.RecipeReactiveRepository;
+import com.spring.framework.recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -27,6 +31,15 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     private final RecipeRepository recipeRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
 
+//    @Autowired
+//    private UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
+//
+//    @Autowired
+//    private CategoryReactiveRepository categoryReactiveRepository;
+//
+//    @Autowired
+//    private RecipeReactiveRepository recipeReactiveRepository;
+
     public RecipeBootstrap(CategoryRepository categoryRepository, RecipeRepository recipeRepository, UnitOfMeasureRepository unitOfMeasureRepository) {
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
@@ -37,7 +50,6 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
         recipeRepository.saveAll(getRecipes());
-        log.debug("Loading bootstrap data");
     }
 
     private List<Recipe> getRecipes() {
