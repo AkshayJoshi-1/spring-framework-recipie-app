@@ -9,6 +9,8 @@ import com.spring.framework.recipeapp.domain.Ingredient;
 import com.spring.framework.recipeapp.domain.Recipe;
 import com.spring.framework.recipeapp.repository.RecipeRepository;
 import com.spring.framework.recipeapp.repository.UnitOfMeasureRepository;
+import com.spring.framework.recipeapp.repository.reactive.RecipeReactiveRepository;
+import com.spring.framework.recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import com.spring.framework.recipeapp.service.IngredientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class IngredientServiceImplTest {
@@ -31,9 +32,12 @@ public class IngredientServiceImplTest {
     RecipeRepository recipeRepository;
 
     @Mock
-    UnitOfMeasureRepository unitOfMeasureRepository;
+    UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
     IngredientService ingredientService;
+
+    @Mock
+    private RecipeReactiveRepository recipeReactiveRepository;
 
     //init converters
     public IngredientServiceImplTest() {
@@ -45,7 +49,7 @@ public class IngredientServiceImplTest {
     public void setUp() throws Exception {
 
         MockitoAnnotations.initMocks(this);
-        ingredientService = new IngredientServiceImpl(recipeRepository, ingredientToIngredientCommand, ingredientCommandToIngredient, unitOfMeasureRepository);
+        ingredientService = new IngredientServiceImpl(recipeRepository, recipeReactiveRepository, ingredientToIngredientCommand, ingredientCommandToIngredient, unitOfMeasureRepository);
     }
 
     @Test
