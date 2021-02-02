@@ -17,16 +17,12 @@ class CategoryReactiveRepositoryTest {
     @Autowired
     CategoryReactiveRepository categoryReactiveRepository;
 
-    @Before
-    public void setUp() {
-        categoryReactiveRepository.deleteAll().block();
-    }
-
     @Test
     public void testSave() {
         Category category = new Category();
         category.setDescription("Category1");
 
+        categoryReactiveRepository.deleteAll().block();
         categoryReactiveRepository.save(category).block();
 
         Long count = categoryReactiveRepository.count().block();

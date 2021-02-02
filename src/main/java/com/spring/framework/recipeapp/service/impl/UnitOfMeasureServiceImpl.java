@@ -2,33 +2,28 @@ package com.spring.framework.recipeapp.service.impl;
 
 import com.spring.framework.recipeapp.command.UnitOfMeasureCommand;
 import com.spring.framework.recipeapp.converter.UnitOfMeasureToUnitOfMeasureCommand;
-import com.spring.framework.recipeapp.repository.UnitOfMeasureRepository;
+import com.spring.framework.recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import com.spring.framework.recipeapp.service.UnitOfMeasurementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import reactor.core.publisher.Flux;
 
 @Service
 public class UnitOfMeasureServiceImpl implements UnitOfMeasurementService {
 
-    private final UnitOfMeasureRepository unitOfMeasureRepository;
+    private final UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
     private final UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand;
 
-    public UnitOfMeasureServiceImpl(@Autowired UnitOfMeasureRepository unitOfMeasureRepository,
+    public UnitOfMeasureServiceImpl(@Autowired UnitOfMeasureReactiveRepository unitOfMeasureRepository,
                                     @Autowired UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand) {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
         this.unitOfMeasureToUnitOfMeasureCommand = unitOfMeasureToUnitOfMeasureCommand;
     }
 
     @Override
-    public Set<UnitOfMeasureCommand> listAllUoms() {
+    public Flux<UnitOfMeasureCommand> listAllUoms() {
 
-        return StreamSupport.stream(unitOfMeasureRepository.findAll().spliterator(), false)
-                    .map(unitOfMeasureToUnitOfMeasureCommand::convert)
-                    .collect(Collectors.toSet());
+        return unitOfMeasureRepository.findAll().map(unitOfMeasureToUnitOfMeasureCommand::convert);
     }
 }

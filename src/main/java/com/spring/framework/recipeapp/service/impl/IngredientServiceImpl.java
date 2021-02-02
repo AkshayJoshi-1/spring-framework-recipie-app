@@ -11,6 +11,7 @@ import com.spring.framework.recipeapp.service.IngredientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
+    public Mono<IngredientCommand> findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
@@ -59,17 +60,17 @@ public class IngredientServiceImpl implements IngredientService {
         IngredientCommand ingredientCommand = ingredientCommandOptional.get();
         ingredientCommand.setRecipeId(recipe.getId());
 
-        return ingredientCommandOptional.get();
+        return Mono.just(ingredientCommandOptional.get());
     }
 
     @Override
-    public IngredientCommand saveIngredientCommand(IngredientCommand command) {
+    public Mono<IngredientCommand> saveIngredientCommand(IngredientCommand command) {
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(command.getRecipeId());
 
         if(recipeOptional.isEmpty()) {
             log.error("No recipe with id: " + command.getRecipeId());
-            return new IngredientCommand();
+            return Mono.just(new IngredientCommand());
         }
 
         Recipe recipe = recipeOptional.get();
@@ -79,7 +80,7 @@ public class IngredientServiceImpl implements IngredientService {
                                                     .findFirst();
 
         if(ingredientOptional.isEmpty()) {
-            return saveNewIngredient(command, recipe);
+            return Mono.just(saveNewIngredient(command, recipe));
 
         } else {
             Ingredient ingredientFound = ingredientOptional.get();
@@ -94,19 +95,19 @@ public class IngredientServiceImpl implements IngredientService {
 
         Utils.fillIngredientRecipes(savedRecipe);
 
-        return ingredientToIngredientCommand.convert(Objects.requireNonNull(savedRecipe.getIngredients()
+        return Mono.just(Objects.requireNonNull(ingredientToIngredientCommand.convert(Objects.requireNonNull(savedRecipe.getIngredients()
                 .stream()
                 .filter(ingredient -> ingredient.getId().equals(command.getId()))
-                .findFirst().orElse(null)));
+                .findFirst().orElse(null)))));
     }
 
     @Override
-    public void deleteByRecipeIdAndIngredientId(String recipeId, Long ingredientId) {
+    public Mono<Void> deleteByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
 
         Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
 
         if(recipeOptional.isEmpty()) {
-            return;
+            return null;
         }
 
         Recipe recipe = recipeOptional.get();
@@ -115,6 +116,7 @@ public class IngredientServiceImpl implements IngredientService {
                                                             .filter(ingredient -> false)
                                                             .findFirst();
 
+        return Mono.empty();
     }
 
     private IngredientCommand saveNewIngredient(IngredientCommand command, Recipe recipe) {

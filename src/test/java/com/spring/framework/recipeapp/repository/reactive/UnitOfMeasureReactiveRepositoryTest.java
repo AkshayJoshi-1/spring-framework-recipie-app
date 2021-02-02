@@ -17,17 +17,13 @@ class UnitOfMeasureReactiveRepositoryTest {
     @Autowired
     UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
 
-    @Before
-    public void setUp() {
-        unitOfMeasureReactiveRepository.deleteAll().block();
-    }
-
     @Test
     public void testSave() {
 
         UnitOfMeasure uom = new UnitOfMeasure();
         uom.setDescription("Each");
 
+        unitOfMeasureReactiveRepository.deleteAll().block();
         unitOfMeasureReactiveRepository.save(uom).block();
         Long count = unitOfMeasureReactiveRepository.count().block();
 

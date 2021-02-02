@@ -60,7 +60,7 @@ public class IngredientController {
                                    @PathVariable String ingredientId,
                                    Model model) {
 
-        model.addAttribute("uomList", unitOfMeasurementService.listAllUoms());
+        model.addAttribute("uomList", unitOfMeasurementService.listAllUoms().collectList().block());
 
         model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(
                                                                 recipeId, ingredientId));
@@ -78,7 +78,7 @@ public class IngredientController {
         ingredientCommand.setRecipeId(recipeCommand.getId());
         ingredientCommand.setUnitOfMeasure(new UnitOfMeasureCommand());
 
-        model.addAttribute("uomList", unitOfMeasurementService.listAllUoms());
+        model.addAttribute("uomList", unitOfMeasurementService.listAllUoms().collectList().block());
 
         model.addAttribute("ingredient", ingredientCommand);
 
@@ -89,7 +89,7 @@ public class IngredientController {
     @RequestMapping("{recipeId}/ingredient")
     public String saveUpdateIngredient(@ModelAttribute IngredientCommand command) {
 
-        IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command);
+        IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command).block();
 
         return "redirect:/recipe/" + savedCommand.getRecipeId() + "/ingredient/" + savedCommand.getId() + "/show";
     }
@@ -98,7 +98,7 @@ public class IngredientController {
     @RequestMapping("{recipeId}/ingredient/{ingredientId}/delete")
     public String deleteIngredient(@PathVariable String recipeId,
                                    @PathVariable String ingredientId) {
-        ingredientService.deleteByRecipeIdAndIngredientId(recipeId, Long.valueOf(ingredientId));
+        ingredientService.deleteByRecipeIdAndIngredientId(recipeId, ingredientId);
 
         return "redirect:/recipe/" + recipeId + "/ingredients";
     }
