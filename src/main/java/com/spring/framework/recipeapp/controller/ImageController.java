@@ -34,7 +34,7 @@ public class ImageController {
 
     @GetMapping("image")
     public String showImageUpload(@PathVariable String recipeId, Model model) {
-        model.addAttribute("recipe", recipeService.findCommandById(recipeId));
+        model.addAttribute("recipe", recipeService.findCommandById(recipeId).block());
         return "recipe/imageuploadform";
     }
 
@@ -47,7 +47,7 @@ public class ImageController {
 
     @GetMapping("getImage")
     public void renderImage(@PathVariable String recipeId, HttpServletResponse response) throws IOException {
-        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
+        RecipeCommand recipeCommand = recipeService.findCommandById(recipeId).block();
 
         if(recipeCommand == null || recipeCommand.getImage() == null) {
             return;

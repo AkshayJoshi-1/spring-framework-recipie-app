@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
+import reactor.core.publisher.Mono;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -40,7 +41,7 @@ class RecipeControllerTest {
 
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
 
-        when(recipeService.findById(anyString())).thenReturn(recipe);
+        when(recipeService.findById(anyString())).thenReturn(Mono.just(recipe));
 
         mockMvc.perform(get("/recipe/1/show"))
                 .andExpect(status().isOk())

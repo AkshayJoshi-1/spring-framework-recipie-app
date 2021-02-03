@@ -11,8 +11,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
+import reactor.core.publisher.Flux;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,19 +46,15 @@ class IndexControllerTest {
     @Test
     void getIndexPage() {
 
-        Set<Recipe> recipes = new HashSet<>();
-
         Recipe recipe = new Recipe();
         recipe.setId("1");
-        recipes.add(recipe);
 
-        recipe = new Recipe();
-        recipe.setId("2");
-        recipes.add(recipe);
+        Recipe recipe2 = new Recipe();
+        recipe2.setId("2");
 
-        Mockito.when(recipeService.getAllRecipes()).thenReturn(recipes);
+        Mockito.when(recipeService.getAllRecipes()).thenReturn(Flux.just(recipe, recipe2));
 
-        ArgumentCaptor<Set<Recipe>> argumentCaptor = ArgumentCaptor.forClass(Set.class);
+        ArgumentCaptor<List<Recipe>> argumentCaptor = ArgumentCaptor.forClass(List.class);
 
         String result = indexController.getIndexPage(model);
 
@@ -64,7 +62,7 @@ class IndexControllerTest {
         verify(model, times(1)).addAttribute(eq("recipes"), argumentCaptor.capture());
         verify(recipeService, times(1)).getAllRecipes();
 
-        Set<Recipe> setInController = argumentCaptor.getValue();
+        List<Recipe> setInController = argumentCaptor.getValue();
 
         assertEquals(2, setInController.size());
     }
@@ -72,6 +70,8 @@ class IndexControllerTest {
     @Test
     void testMockMVC() throws Exception {
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(indexController).build();
+
+        Mockito.when(recipeService.getAllRecipes()).thenReturn(Flux.empty());
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
