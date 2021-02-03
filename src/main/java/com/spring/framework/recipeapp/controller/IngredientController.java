@@ -47,6 +47,7 @@ public class IngredientController {
                                  @PathVariable String ingredientId,
                                  Model model) {
 
+        log.info("Recipe ID: " + recipeId + " Ingredient ID: " + ingredientId);
         model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(
                                                                 recipeId, ingredientId).block());
 
